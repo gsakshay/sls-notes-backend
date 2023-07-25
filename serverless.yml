@@ -1,9 +1,5 @@
-# @format
-
 service: sls-notes-backend
 
-# You can pin your service to only deploy with a specific Serverless version
-# Check out our docs for more details
 frameworkVersion: "3"
 
 provider:
@@ -11,7 +7,7 @@ provider:
   runtime: nodejs18.x
   stage: prod
   region: us-east-2
-  memorySice: 128
+  memorySize: 128
   timeout: 5
   endpointType: regional
   environment:
@@ -22,7 +18,7 @@ resources:
     NotesTable:
       Type: AWS::DynamoDB::Table
       DeletionPolicy: Retain
-      properties:
+      Properties:
         TableName: ${self:provider.environment.NOTES_TABLE}
         AttributeDefinitions:
           - AttributeName: user_id
@@ -41,7 +37,6 @@ resources:
           WriteCapacityUnits: 1
         GlobalSecondaryIndexes:
           - IndexName: note_id-index
-            KeyType: HASH
             KeySchema:
               - AttributeName: note_id
                 KeyType: HASH
