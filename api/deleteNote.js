@@ -9,17 +9,27 @@ AWS.config.update({
 	region: "us-east-2",
 })
 
-import { getResponseHeaders } from "./utils"
+import { getResponseHeaders, getUserID } from "./utils"
 
 const dynamoDB = new AWS.DynamoDB.DocumentClient()
 const tableName = process.env.NOTES_TABLE
 
 exports.handler = async (event) => {
 	try {
+		let timestamp = parseInt(event.pathParameters.timestamp)
+		let params = {
+			TableName: tableName,
+			Key: {
+				user_id: getUserID(),
+				timestamp: timestamp,
+			},
+		}
+
+		let data = await dynamoDB.delete(params).promise()
+
 		return {
 			statusCode: 200,
 			headers: getResponseHeaders(),
-			body: JSON.stringify({}),
 		}
 	} catch (e) {
 		console.log("Error", e)
