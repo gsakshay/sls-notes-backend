@@ -9,10 +9,10 @@ AWS.config.update({
 	region: "us-east-2",
 })
 
-import { getResponseHeaders, getUserID, getUserName } from "./utils"
-
 import moment from "moment"
-import uuidv4 from "uuid/v4"
+import { v4 as uuidv4 } from "uuid"
+
+import { getResponseHeaders, getUserID, getUserName } from "./utils"
 
 const dynamoDB = new AWS.DynamoDB.DocumentClient()
 const tableName = process.env.NOTES_TABLE

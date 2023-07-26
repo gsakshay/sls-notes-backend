@@ -2,6 +2,22 @@ service: sls-notes-backend
 
 frameworkVersion: "3"
 
+plugins:
+  - serverless-offline
+
+custom:
+  allowedHeaders:
+    - Accept
+    - Content-Type
+    - Content-Length
+    - Authorization
+    - app_user_id
+    - app_user_name
+    - X-Amz-Date
+    - X-Api-Key
+    - X-Amz-User-Agent
+    - X-Amz-Security-Token
+
 provider:
   name: aws
   runtime: nodejs18.x
@@ -12,6 +28,65 @@ provider:
   endpointType: regional
   environment:
     NOTES_TABLE: ${self:service}-${opt:stage, self:provider.stage}
+  iamRoleStatements:
+    - Effect: Allow
+      Action:
+        - dynamodb:Query
+        - dynamodb:putItem
+        - dynamodb:DeleteItem
+      Resource: "arn:aws:dynamodb:${opt:region, self:provider.region}:*:table/self.provider.environment.NOTES_TABLE"
+
+functions:
+  add-note:
+    handler: api/addNote.handler
+    description: POST /note
+    events:
+      - http:
+          path: note
+          method: post
+          cors:
+            origin: "*"
+            headers: ${self:custom.allowedHeaders}
+  update-note:
+    handler: api/updateNote.handler
+    description: PATCH /note
+    events:
+      - http:
+          path: note
+          method: patch
+          cors:
+            origin: "*"
+            headers: ${self:custom.allowedHeaders}
+  get-notes:
+    handler: api/getNotes.handler
+    description: GET /note
+    events:
+      - http:
+          path: notes
+          method: get
+          cors:
+            origin: "*"
+            headers: ${self:custom.allowedHeaders}
+  get-note:
+    handler: api/getNote.handler
+    description: GET /note/n/{note_id}
+    events:
+      - http:
+          path: /note/n/{note_id}
+          method: get
+          cors:
+            origin: "*"
+            headers: ${self:custom.allowedHeaders}
+  delete-note:
+    handler: api/deleteNote.handler
+    description: DELETE /note/t/{timestamp}
+    events:
+      - http:
+          path: /note/t/{timestamp}
+          method: post
+          cors:
+            origin: "*"
+            headers: ${self:custom.allowedHeaders}
 
 resources:
   Resources:
