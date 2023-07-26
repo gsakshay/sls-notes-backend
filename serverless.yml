@@ -1,9 +1,9 @@
-service: sls-notes-backend
 
-frameworkVersion: "3"
+service: sls-notes-backend
 
 plugins:
   - serverless-offline
+  # - serverless-domain-manager
 
 custom:
   allowedHeaders:
@@ -11,18 +11,18 @@ custom:
     - Content-Type
     - Content-Length
     - Authorization
-    - app_user_id
-    - app_user_name
     - X-Amz-Date
     - X-Api-Key
-    - X-Amz-User-Agent
     - X-Amz-Security-Token
+    - X-Amz-User-Agent
+    - app_user_id
+    - app_user_name
 
 provider:
   name: aws
   runtime: nodejs18.x
-  stage: prod
   region: us-east-2
+  stage: prod
   memorySize: 128
   timeout: 5
   endpointType: regional
@@ -30,62 +30,66 @@ provider:
     NOTES_TABLE: ${self:service}-${opt:stage, self:provider.stage}
   iamRoleStatements:
     - Effect: Allow
-      Action:
+      Action: 
         - dynamodb:Query
-        - dynamodb:putItem
+        - dynamodb:PutItem
         - dynamodb:DeleteItem
-      Resource: "arn:aws:dynamodb:${opt:region, self:provider.region}:*:table/self.provider.environment.NOTES_TABLE"
+      Resource: "arn:aws:dynamodb:${opt:region, self:provider.region}:*:table/${self:provider.environment.NOTES_TABLE}"
 
 functions:
   add-note:
-    handler: api/addNote.handler
+    handler: api/add-note.handler
     description: POST /note
     events:
       - http:
           path: note
           method: post
           cors:
-            origin: "*"
+            origin: '*'
             headers: ${self:custom.allowedHeaders}
+
   update-note:
-    handler: api/updateNote.handler
+    handler: api/update-note.handler
     description: PATCH /note
     events:
       - http:
           path: note
           method: patch
           cors:
-            origin: "*"
+            origin: '*'
             headers: ${self:custom.allowedHeaders}
+
   get-notes:
-    handler: api/getNotes.handler
-    description: GET /note
+    handler: api/get-notes.handler
+    description: GET /notes
     events:
       - http:
           path: notes
           method: get
           cors:
-            origin: "*"
+            origin: '*'
             headers: ${self:custom.allowedHeaders}
+
   get-note:
-    handler: api/getNote.handler
+    handler: api/get-note.handler
     description: GET /note/n/{note_id}
     events:
       - http:
-          path: /note/n/{note_id}
+          path: note/n/{note_id}
           method: get
           cors:
-            origin: "*"
+            origin: '*'
             headers: ${self:custom.allowedHeaders}
+
   delete-note:
-    handler: api/deleteNote.handler
-    description: DELETE /note/t/{timestamp}
+    handler: api/delete-note.handler
+    description: DELETE /note
     events:
       - http:
-          path: /note/t/{timestamp}
-          method: post
+          path: note/t/{timestamp}
+          method: delete
           cors:
-            origin: "*"
+            origin: '*'
             headers: ${self:custom.allowedHeaders}
 
 resources:
@@ -120,3 +124,4 @@ resources:
             ProvisionedThroughput:
               ReadCapacityUnits: 1
               WriteCapacityUnits: 1
+            

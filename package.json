@@ -1,7 +1,6 @@
 {
 	"name": "sls-notes-backend",
 	"version": "1.0.0",
-	"type": "module",
 	"description": "",
 	"main": "index.js",
 	"scripts": {
@@ -11,7 +10,7 @@
 	"author": "",
 	"license": "ISC",
 	"dependencies": {
-		"aws-sdk": "^2.1422.0",
+		"aws-sdk": "^2.1423.0",
 		"moment": "^2.29.4",
 		"serverless-offline": "^12.0.4",
 		"underscore": "^1.13.6",
