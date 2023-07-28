@@ -23,12 +23,16 @@ exports.handler = async (event) => {
 		item.timestamp = moment().unix()
 		item.expires = moment().add(90, "days").unix()
 
+		console.log("\n\n\nStart\n\n\n")
+
 		let data = await dynamodb
 			.put({
 				TableName: tableName,
 				Item: item,
 			})
 			.promise()
+
+		console.log("\n\n\nEnd\n\n\n")
 
 		return {
 			statusCode: 200,
